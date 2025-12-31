@@ -2,29 +2,46 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Holiday Card</title>
+  <title>Season's Creepings</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
 
   <main id="stage">
-    <!-- Helper Hint -->
-    <div id="ui-hint" class="fade-in">
-      <div class="hand-icon">👆</div>
-      <p>Tap to open</p>
+    <!-- The Card Object -->
+    <div id="card" class="card-closed">
+      
+      <!-- The HINGED COVER (moves) -->
+      <div class="card-flap cover-flap">
+        <div class="face front">
+          <img src="images/card-front.jpeg" alt="Front Cover" />
+          <div class="ui-hint">Tap to Open</div>
+        </div>
+        <div class="face inside-left">
+          <img src="images/card-inside-left.jpeg" alt="Inside Left" />
+        </div>
+      </div>
+
+      <!-- The BASE (stationary) -->
+      <div class="card-flap base-flap">
+        <div class="face inside-right">
+          <img src="images/card-inside-right.jpeg" alt="Inside Right" />
+        </div>
+        <div class="face back">
+          <img src="images/card-back.jpeg" alt="Back Cover" />
+        </div>
+      </div>
+
     </div>
 
-    <div id="book-container"></div>
-
+    <!-- UI Controls -->
     <div id="controls">
-      <button id="prev" type="button" aria-label="Previous Page">◀</button>
-      <button id="open" type="button">Open Card</button>
-      <button id="next" type="button" aria-label="Next Page">▶</button>
+      <button id="toggle-btn">Open Card</button>
+      <button id="flip-btn">See Back</button>
     </div>
   </main>
 
-  <script src="js/vendor/page-flip.browser.js"></script>
   <script src="js/pageflip.js"></script>
 </body>
 </html>

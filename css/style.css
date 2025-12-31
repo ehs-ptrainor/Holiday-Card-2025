@@ -1,6 +1,7 @@
 :root {
   --bg-color: #050505;
-  --accent-color: #d11a1a; /* Festive/Creepy Red */
+  --card-aspect: 2/3; /* Adjust based on your image proportions */
+  --transition-speed: 0.8s;
 }
 
 body {
@@ -8,89 +9,140 @@ body {
   background: var(--bg-color);
   color: white;
   font-family: 'Georgia', serif;
-  overflow: hidden; /* Prevent bouncing on mobile */
-  touch-action: none;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
 }
 
 #stage {
-  height: 100dvh;
+  perspective: 2000px; /* Gives depth to the 3D flip */
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
-  padding: 10px;
-  box-sizing: border-box;
+  align-items: center;
 }
 
-#book-container {
-  /* This ensures the card stays proportional and fits on all screens */
-  width: 95vw;
-  max-width: 900px;
-  height: 75dvh; 
-  margin: 0 auto;
-  /* Remove the tan background to make it look seamless */
-  background-color: transparent; 
+/* THE CARD CONTAINER */
+#card {
+  position: relative;
+  width: 85vw;
+  max-width: 400px;
+  aspect-ratio: 2 / 3;
+  transform-style: preserve-3d;
+  transition: transform var(--transition-speed) ease-in-out;
+  cursor: pointer;
 }
 
-/* Page Styling for the Library */
-.stf__parent {
-  background-color: transparent !important;
+/* THE FLAPS (Cover and Base) */
+.card-flap {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  transform-style: preserve-3d;
+  transition: transform var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Controls */
+.cover-flap {
+  z-index: 2;
+  transform-origin: left;
+}
+
+.base-flap {
+  z-index: 1;
+}
+
+/* INDIVIDUAL FACES */
+.face {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.face img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* FACE ROTATIONS */
+.inside-left { transform: rotateY(180deg); }
+.back { transform: rotateY(180deg); }
+
+/* CARD STATES */
+
+/* 1. Opened State (The cover swings left) */
+#card.is-open .cover-flap {
+  transform: rotateY(-180deg);
+}
+
+/* 2. Flipped State (The whole card turns around to show the back) */
+#card.is-flipped {
+  transform: rotateY(180deg);
+}
+
+/* UI HINT ON COVER */
+.ui-hint {
+  position: absolute;
+  bottom: 20px;
+  width: 100%;
+  text-align: center;
+  font-size: 0.8rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  background: rgba(0,0,0,0.4);
+  padding: 10px 0;
+  backdrop-filter: blur(5px);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+/* CONTROLS */
 #controls {
-  margin-top: 20px;
+  margin-top: 40px;
   display: flex;
   gap: 15px;
-  z-index: 10;
 }
 
 button {
-  padding: 12px 24px;
-  border-radius: 8px;
-  border: 1px solid rgba(255,255,255,0.2);
-  background: rgba(20, 20, 20, 0.8);
-  color: #fff;
+  background: transparent;
+  color: #888;
+  border: 1px solid #444;
+  padding: 10px 20px;
+  border-radius: 2px;
   cursor: pointer;
-  font-size: 0.9rem;
   text-transform: uppercase;
+  font-size: 0.7rem;
   letter-spacing: 1px;
-  transition: all 0.3s ease;
+  transition: 0.3s;
 }
 
 button:hover {
-  background: var(--accent-color);
-  border-color: var(--accent-color);
+  color: #fff;
+  border-color: #fff;
+  background: rgba(255,255,255,0.05);
 }
 
-/* UI Hint Overlay */
-#ui-hint {
-  position: absolute;
-  top: 50%;
-  pointer-events: none;
-  z-index: 100;
-  text-align: center;
-  text-shadow: 0 0 10px rgba(0,0,0,1);
-}
-
-.hand-icon {
-  font-size: 3rem;
-  animation: tap-gesture 1.5s infinite;
-}
-
-@keyframes tap-gesture {
-  0%, 100% { transform: translateY(0) scale(1); opacity: 0.8; }
-  50% { transform: translateY(-10px) scale(1.1); opacity: 1; }
-}
-
-.fade-out { opacity: 0; transition: opacity 0.5s ease; }
-
-/* Portrait Mobile Fix: When the screen is narrow, we show 1 page at a time */
-@media (max-width: 600px) {
-  #book-container {
-    height: 70dvh;
+/* MOBILE LANDSCAPE FIX */
+@media (orientation: landscape) and (max-height: 500px) {
+  #card {
+    height: 60vh;
+    width: auto;
   }
-  button {
-    padding: 10px 15px;
-  }
+  #controls { margin-top: 10px; }
 }

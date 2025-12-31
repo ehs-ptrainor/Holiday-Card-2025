@@ -1,66 +1,36 @@
-const container = document.getElementById("book-container");
-const hint = document.getElementById("ui-hint");
+const card = document.getElementById('card');
+const toggleBtn = document.getElementById('toggle-btn');
+const flipBtn = document.getElementById('flip-btn');
 
-const IMAGES = [
-  "images/card-front.jpeg",
-  "images/card-inside-left.jpeg",
-  "images/card-inside-right.jpeg",
-  "images/card-back.jpeg"
-];
+// Toggle Open/Close
+function toggleCard() {
+    card.classList.toggle('is-open');
+    
+    // Reset back view if we close the card
+    if (!card.classList.contains('is-open')) {
+        card.classList.remove('is-flipped');
+    }
 
-// Calculate dimensions based on viewport
-const isMobile = window.innerWidth < 768;
-
-const pageFlip = new St.PageFlip(container, {
-  width: 1000, // base page width
-  height: 1500, // base page height
-  size: "stretch",
-  
-  // SPREAD settings
-  showCover: true, 
-  usePortrait: true, // IMPORTANT: Allows 1-page view on vertical screens
-  
-  // Style settings
-  drawShadow: true,
-  maxShadowOpacity: 0.2,
-  flippingTime: 1000,
-  
-  // Interaction
-  useMouseEvents: true,
-  clickEventForward: false, // Prevents clicks on buttons from triggering a flip
-});
-
-pageFlip.loadFromImages(IMAGES);
-
-// Event: Hide hint on first flip
-pageFlip.on('flip', (e) => {
-  hint.classList.add('fade-out');
-  updateButtons(e.data);
-});
-
-// Logic to update UI
-function updateButtons(index) {
-  const openBtn = document.getElementById("open");
-  if (index > 0) {
-    openBtn.style.opacity = "0";
-    openBtn.style.pointerEvents = "none";
-  } else {
-    openBtn.style.opacity = "1";
-    openBtn.style.pointerEvents = "auto";
-  }
+    // Update Button Text
+    const isOpen = card.classList.contains('is-open');
+    toggleBtn.innerText = isOpen ? "Close Card" : "Open Card";
+    flipBtn.style.display = isOpen ? "block" : "none";
 }
 
-// Controls
-document.getElementById("open").addEventListener("click", () => pageFlip.flipNext());
-document.getElementById("next").addEventListener("click", () => pageFlip.flipNext());
-document.getElementById("prev").addEventListener("click", () => pageFlip.flipPrev());
+// Toggle Front/Back
+function flipCard(e) {
+    e.stopPropagation(); // Don't trigger the "Open" toggle
+    card.classList.toggle('is-flipped');
+    flipBtn.innerText = card.classList.contains('is-flipped') ? "See Inside" : "See Back";
+}
 
-window.addEventListener("keydown", (e) => {
-  if (e.key === "ArrowRight") pageFlip.flipNext();
-  if (e.key === "ArrowLeft") pageFlip.flipPrev();
+// Event Listeners
+card.addEventListener('click', toggleCard);
+toggleBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggleCard();
 });
+flipBtn.addEventListener('click', flipCard);
 
-// Fix for window resizing
-window.addEventListener('resize', () => {
-    pageFlip.update();
-});
+// Hide flip button initially
+flipBtn.style.display = "none";
